@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sprout — Plant Care App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EFEAE0; --panel:#FBF9F4; --forest:#1F3625; --moss:#4C7A5D;
+    --moss-soft:#DDE7DE; --ochre:#C9A227; --ochre-soft:#F3E7C2;
+    --red-soft:#F6D9D9; --red:#8A3A34;
+    --ink:#23291F; --ink-faint:#6E7568; --line:#D8D2C2;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; }
+  .shell{
+    display:grid; grid-template-columns:220px 1fr;
+    min-height:100vh; max-width:1180px; margin:0 auto;
+    background:var(--panel); border-left:1px solid var(--line); border-right:1px solid var(--line);
+  }
+
+  /* ---------- sidebar ---------- */
+  .sidebar{ background:var(--forest); color:#F1EFE6; padding:28px 20px; }
+  .logo{ font-family:'Fraunces',serif; font-weight:600; font-size:22px; margin-bottom:34px; }
+  .logo span{ color:var(--ochre); }
+  .nav-item{
+    font-size:14px; padding:10px 12px; border-radius:3px; margin-bottom:4px;
+    color:#CFE0D2; cursor:pointer; display:flex; align-items:center; gap:10px;
+    transition:background .15s;
+  }
+  .nav-item:hover{ background:rgba(255,255,255,0.06); }
+  .nav-item.active{ background:rgba(255,255,255,0.1); color:#fff; font-weight:500; }
+  .nav-icon{ font-size:15px; width:18px; text-align:center; }
+
+  /* ---------- main ---------- */
+  .main{ padding:32px 36px 48px; }
+  .page{ display:none; }
+  .page.active{ display:block; }
+
+  .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+  .greet h2{ font-family:'Fraunces',serif; font-weight:600; font-size:26px; color:var(--forest); }
+  .greet p{ font-size:13px; color:var(--ink-faint); margin-top:4px; }
+  .avatar{
+    width:38px; height:38px; border-radius:50%; background:var(--moss); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; flex-shrink:0;
+  }
+
+  .stat-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:30px; }
+  .stat-card{ background:#fff; border:1px solid var(--line); border-radius:4px; padding:16px 18px; }
+  .stat-card .num{ font-family:'Fraunces',serif; font-size:28px; font-weight:600; color:var(--forest); }
+  .stat-card .label{ font-size:12px; color:var(--ink-faint); margin-top:2px; }
+
+  .section-title{ font-size:13px; font-weight:600; color:var(--forest); margin-bottom:14px; }
+
+  /* plant card + grid, reused across pages */
+  .plant-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .plant-card{ background:#fff; border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+  .plant-img{ height:110px; position:relative; background:linear-gradient(135deg,var(--moss-soft),#C9DBC9); }
+  .plant-img::before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 30% 70%, rgba(76,122,93,0.35) 0 16px, transparent 17px),
+      radial-gradient(circle at 55% 40%, rgba(76,122,93,0.28) 0 22px, transparent 23px),
+      radial-gradient(circle at 75% 65%, rgba(76,122,93,0.3) 0 14px, transparent 15px);
+  }
+  .badge{ position:absolute; top:10px; right:10px; font-size:11px; font-weight:600; padding:4px 8px; border-radius:3px; }
+  .badge.water{ background:var(--ochre-soft); color:#7A5E10; }
+  .badge.overdue{ background:var(--red-soft); color:var(--red); }
+  .badge.ok{ background:var(--moss-soft); color:#2C4A38; }
+  .plant-body{ padding:14px 16px 16px; }
+  .plant-body h3{ font-family:'Fraunces',serif; font-size:16px; font-weight:600; color:var(--forest); }
+  .plant-body .species{ font-size:12px; color:var(--ink-faint); margin:2px 0 12px; }
+  .moisture{ height:6px; background:#EDE9DD; border-radius:3px; overflow:hidden; margin-bottom:6px; }
+  .moisture > div{ height:100%; background:var(--moss); }
+  .moisture-label{ font-size:11px; color:var(--ink-faint); }
+
+  /* buttons */
+  .btn{
+    font-family:'Inter',sans-serif; font-size:13px; font-weight:600; border:none; border-radius:4px;
+    padding:9px 16px; cursor:pointer;
+  }
+  .btn-primary{ background:var(--forest); color:#fff; }
+  .btn-ghost{ background:transparent; color:var(--forest); border:1px solid var(--line); }
+  .btn-sm{ padding:6px 12px; font-size:12px; }
+
+  /* ---- My Plants filters ---- */
+  .filter-row{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .chip{
+    font-size:12px; padding:7px 14px; border-radius:20px; border:1px solid var(--line);
+    background:#fff; color:var(--ink-faint); cursor:pointer;
+  }
+  .chip.active{ background:var(--forest); color:#fff; border-color:var(--forest); }
+
+  /* ---- Care Schedule ---- */
+  .day-col{ background:#fff; border:1px solid var(--line); border-radius:4px; padding:14px; min-height:160px; }
+  .week-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-bottom:30px; }
+  .day-col .day-name{ font-size:11px; font-weight:600; color:var(--ink-faint); margin-bottom:10px; text-transform:uppercase; letter-spacing:.03em; }
+  .day-col.today{ border-color:var(--moss); box-shadow:inset 0 0 0 1px var(--moss); }
+  .task{
+    font-size:11.5px; padding:6px 8px; border-radius:3px; margin-bottom:6px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .task.water{ background:var(--ochre-soft); color:#7A5E10; }
+  .task.mist{ background:var(--moss-soft); color:#2C4A38; }
+  .task.feed{ background:#E7E0F2; color:#4A3B72; }
+
+  .list-row{
+    display:flex; align-items:center; gap:14px; background:#fff; border:1px solid var(--line);
+    border-radius:4px; padding:14px 16px; margin-bottom:10px;
+  }
+  .list-row .dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .list-row .title{ font-size:14px; font-weight:600; color:var(--ink); flex:1; }
+  .list-row .meta{ font-size:12px; color:var(--ink-faint); }
+
+  /* ---- Journal ---- */
+  .journal-entry{
+    display:grid; grid-template-columns:64px 1fr; gap:16px; margin-bottom:24px; position:relative;
+  }
+  .journal-entry::before{
+    content:""; position:absolute; left:31px; top:64px; bottom:-24px; width:1px; background:var(--line);
+  }
+  .journal-entry:last-child::before{ display:none; }
+  .j-thumb{
+    width:64px; height:64px; border-radius:4px;
+    background:linear-gradient(135deg,var(--moss-soft),#C9DBC9);
+  }
+  .j-body{ background:#fff; border:1px solid var(--line); border-radius:4px; padding:14px 16px; }
+  .j-body .j-head{ display:flex; justify-content:space-between; margin-bottom:6px; }
+  .j-body .j-plant{ font-family:'Fraunces',serif; font-size:14px; font-weight:600; color:var(--forest); }
+  .j-body .j-date{ font-size:11px; color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; }
+  .j-body p{ font-size:13px; color:var(--ink); line-height:1.5; }
+
+  /* ---- Settings ---- */
+  .settings-card{ background:#fff; border:1px solid var(--line); border-radius:4px; padding:22px 24px; margin-bottom:18px; max-width:560px; }
+  .settings-card h4{ font-size:13px; font-weight:600; color:var(--forest); margin-bottom:16px; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12px; color:var(--ink-faint); margin-bottom:5px; }
+  .field input{
+    width:100%; padding:9px 12px; border:1px solid var(--line); border-radius:4px; font-size:13px;
+    font-family:'Inter',sans-serif; background:var(--bg);
+  }
+  .toggle-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); }
+  .toggle-row:last-child{ border-bottom:none; }
+  .toggle-row .t-title{ font-size:13px; font-weight:500; color:var(--ink); }
+  .toggle-row .t-sub{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; }
+  .switch{ width:38px; height:22px; border-radius:11px; background:var(--line); position:relative; cursor:pointer; flex-shrink:0; }
+  .switch.on{ background:var(--moss); }
+  .switch::after{
+    content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%;
+    background:#fff; transition:left .15s;
+  }
+  .switch.on::after{ left:18px; }
+
+  /* ---- Search ---- */
+  .search-bar{
+    display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--line);
+    border-radius:6px; padding:12px 16px; margin-bottom:18px;
+  }
+  .search-bar input{
+    flex:1; border:none; outline:none; font-size:14px; font-family:'Inter',sans-serif; background:transparent; color:var(--ink);
+  }
+  .search-bar input::placeholder{ color:#A6A093; }
+  .search-icon{ color:var(--ink-faint); font-size:15px; }
+  .result-row{
+    display:grid; grid-template-columns:56px 1fr auto; gap:14px; align-items:center;
+    background:#fff; border:1px solid var(--line); border-radius:4px; padding:12px 14px; margin-bottom:10px;
+  }
+  .r-thumb{ width:56px; height:56px; border-radius:4px; background:linear-gradient(135deg,var(--moss-soft),#C9DBC9); }
+  .r-name{ font-family:'Fraunces',serif; font-size:14px; font-weight:600; color:var(--forest); }
+  .r-sci{ font-size:11.5px; color:var(--ink-faint); font-style:italic; margin-top:1px; }
+  .r-tags{ margin-top:6px; display:flex; gap:6px; }
+  .tag{ font-size:10.5px; padding:3px 8px; border-radius:10px; background:var(--bg); color:var(--ink-faint); }
+  .empty-hint{ font-size:12px; color:var(--ink-faint); margin-bottom:16px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="sidebar">
+    <div class="logo">🌿 <span>Sprout</span></div>
+    <div class="nav-item active" data-page="dashboard"><span class="nav-icon">⌂</span> Dashboard</div>
+    <div class="nav-item" data-page="myplants"><span class="nav-icon">❖</span> My Plants</div>
+    <div class="nav-item" data-page="search"><span class="nav-icon">⌕</span> Search Plants</div>
+    <div class="nav-item" data-page="schedule"><span class="nav-icon">▤</span> Care Schedule</div>
+    <div class="nav-item" data-page="journal"><span class="nav-icon">✎</span> Journal</div>
+    <div class="nav-item" data-page="settings"><span class="nav-icon">⚙</span> Settings</div>
+  </div>
+
+  <div class="main">
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <div class="page active" id="page-dashboard">
+      <div class="topbar">
+        <div class="greet"><h2>Good morning, Riya</h2><p>3 plants need attention today</p></div>
+        <div class="avatar">RS</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card"><div class="num">14</div><div class="label">Total plants</div></div>
+        <div class="stat-card"><div class="num">3</div><div class="label">Needs water today</div></div>
+        <div class="stat-card"><div class="num">92%</div><div class="label">Healthy</div></div>
+      </div>
+      <div class="section-title">Your plants</div>
+      <div class="plant-grid">
+        <div class="plant-card"><div class="plant-img"><div class="badge water">Water today</div></div>
+          <div class="plant-body"><h3>Monstera Deliciosa</h3><div class="species">Swiss cheese plant</div>
+          <div class="moisture"><div style="width:62%"></div></div><div class="moisture-label">Soil moisture · 62%</div></div></div>
+        <div class="plant-card"><div class="plant-img"><div class="badge overdue">Overdue</div></div>
+          <div class="plant-body"><h3>Snake Plant</h3><div class="species">Dracaena trifasciata</div>
+          <div class="moisture"><div style="width:24%; background:var(--ochre)"></div></div><div class="moisture-label">Soil moisture · 24%</div></div></div>
+        <div class="plant-card"><div class="plant-img"><div class="badge ok">Healthy</div></div>
+          <div class="plant-body"><h3>Pothos</h3><div class="species">Epipremnum aureum</div>
+          <div class="moisture"><div style="width:80%"></div></div><div class="moisture-label">Soil moisture · 80%</div></div></div>
+      </div>
+    </div>
+
+    <!-- ===================== MY PLANTS ===================== -->
+    <div class="page" id="page-myplants">
+      <div class="topbar">
+        <div class="greet"><h2>My Plants</h2><p>14 plants across 4 rooms</p></div>
+        <button class="btn btn-primary" onclick="showPage('search')">+ Add plant</button>
+      </div>
+      <div class="filter-row">
+        <div class="chip active">All rooms</div>
+        <div class="chip">Living room</div>
+        <div class="chip">Bedroom</div>
+        <div class="chip">Balcony</div>
+        <div class="chip">Kitchen</div>
+      </div>
+      <div class="plant-grid">
+        <div class="plant-card"><div class="plant-img"><div class="badge water">Water today</div></div>
+          <div class="plant-body"><h3>Monstera Deliciosa</h3><div class="species">Living room</div>
+          <div class="moisture"><div style="width:62%"></div></div><div class="moisture-label">Soil moisture · 62%</div></div></div>
+        <div class="plant-card"><div class="plant-img"><div class="badge overdue">Overdue</div></div>
+          <div class="plant-body"><h3>Snake Plant</h3><div class="species">Bedroom</div>
+          <div class="moisture"><div style="width:24%; background:var(--ochre)"></div></div><div class="moisture-label">Soil moisture · 24%</div></div></div>
+        <div class="plant-card"><div class="plant-img"><div class="badge ok">Healthy</div></div>
+          <div class="plant-body"><h3>Pothos</h3><div class="species">Kitchen</div>
+          <div class="moisture"><div style="width:80%"></div></div><div class="moisture-label">Soil moisture · 80%</div></div></div>
+        <div class="plant-card"><div class="plant-img"><div class="badge ok">Healthy</div></div>
+          <div class="plant-body"><h3>Fiddle Leaf Fig</h3><div class="species">Living room</div>
+          <div class="moisture"><div style="width:70%"></div></div><div class="moisture-label">Soil moisture · 70%</div></div></div>
+        <div class="plant-card"><div class="plant-img"><div class="badge water">Water today</div></div>
+          <div class="plant-body"><h3>Peace Lily</h3><div class="species">Balcony</div>
+          <div class="moisture"><div style="width:40%"></div></div><div class="moisture-label">Soil moisture · 40%</div></div></div>
+        <div class="plant-card"><div class="plant-img"><div class="badge ok">Healthy</div></div>
+          <div class="plant-body"><h3>ZZ Plant</h3><div class="species">Bedroom</div>
+          <div class="moisture"><div style="width:66%"></div></div><div class="moisture-label">Soil moisture · 66%</div></div></div>
+      </div>
+    </div>
+
+    <!-- ===================== SEARCH PLANTS ===================== -->
+    <div class="page" id="page-search">
+      <div class="topbar">
+        <div class="greet"><h2>Search Plants</h2><p>Find a plant to add to your collection</p></div>
+      </div>
+
+      <div class="search-bar">
+        <span class="search-icon">⌕</span>
+        <input type="text" placeholder="Search by name, e.g. 'pothos' or 'low light'" value="fern">
+      </div>
+
+      <div class="filter-row">
+        <div class="chip active">All</div>
+        <div class="chip">Low light</div>
+        <div class="chip">Pet safe</div>
+        <div class="chip">Easy care</div>
+        <div class="chip">Air purifying</div>
+      </div>
+
+      <div class="empty-hint">6 results for "fern"</div>
+
+      <div class="result-row">
+        <div class="r-thumb"></div>
+        <div>
+          <div class="r-name">Boston Fern</div>
+          <div class="r-sci">Nephrolepis exaltata</div>
+          <div class="r-tags"><span class="tag">Low light</span><span class="tag">High humidity</span><span class="tag">Pet safe</span></div>
+        </div>
+        <button class="btn btn-primary btn-sm">Add</button>
+      </div>
+      <div class="result-row">
+        <div class="r-thumb"></div>
+        <div>
+          <div class="r-name">Maidenhair Fern</div>
+          <div class="r-sci">Adiantum raddianum</div>
+          <div class="r-tags"><span class="tag">Medium light</span><span class="tag">Frequent watering</span></div>
+        </div>
+        <button class="btn btn-primary btn-sm">Add</button>
+      </div>
+      <div class="result-row">
+        <div class="r-thumb"></div>
+        <div>
+          <div class="r-name">Bird's Nest Fern</div>
+          <div class="r-sci">Asplenium nidus</div>
+          <div class="r-tags"><span class="tag">Low light</span><span class="tag">Pet safe</span><span class="tag">Easy care</span></div>
+        </div>
+        <button class="btn btn-primary btn-sm">Add</button>
+      </div>
+      <div class="result-row">
+        <div class="r-thumb"></div>
+        <div>
+          <div class="r-name">Staghorn Fern</div>
+          <div class="r-sci">Platycerium bifurcatum</div>
+          <div class="r-tags"><span class="tag">Bright indirect</span><span class="tag">Mount on wood</span></div>
+        </div>
+        <button class="btn btn-primary btn-sm">Add</button>
+      </div>
+    </div>
+
+    <!-- ===================== CARE SCHEDULE ===================== -->
+    <div class="page" id="page-schedule">
+      <div class="topbar">
+        <div class="greet"><h2>Care Schedule</h2><p>Week of Sept 1 – 7</p></div>
+        <button class="btn btn-ghost">+ Add task</button>
+      </div>
+
+      <div class="week-grid">
+        <div class="day-col"><div class="day-name">Mon</div>
+          <div class="task water">💧 Peace Lily</div></div>
+        <div class="day-col"><div class="day-name">Tue</div>
+          <div class="task feed">🌱 Fiddle Leaf</div></div>
+        <div class="day-col today"><div class="day-name">Wed · Today</div>
+          <div class="task water">💧 Monstera</div>
+          <div class="task water">💧 Snake Plant</div>
+          <div class="task mist">💦 Fern</div></div>
+        <div class="day-col"><div class="day-name">Thu</div></div>
+        <div class="day-col"><div class="day-name">Fri</div>
+          <div class="task water">💧 Pothos</div></div>
+        <div class="day-col"><div class="day-name">Sat</div>
+          <div class="task mist">💦 Boston Fern</div></div>
+        <div class="day-col"><div class="day-name">Sun</div>
+          <div class="task feed">🌱 ZZ Plant</div></div>
+      </div>
+
+      <div class="section-title">Upcoming</div>
+      <div class="list-row"><div class="dot" style="background:var(--ochre)"></div>
+        <div class="title">Water Snake Plant</div><div class="meta">Today, overdue by 2 days</div></div>
+      <div class="list-row"><div class="dot" style="background:var(--moss)"></div>
+        <div class="title">Water Monstera Deliciosa</div><div class="meta">Today</div></div>
+      <div class="list-row"><div class="dot" style="background:#4A3B72"></div>
+        <div class="title">Fertilize Fiddle Leaf Fig</div><div class="meta">In 2 days</div></div>
+    </div>
+
+    <!-- ===================== JOURNAL ===================== -->
+    <div class="page" id="page-journal">
+      <div class="topbar">
+        <div class="greet"><h2>Journal</h2><p>Notes and photos from your plant care</p></div>
+        <button class="btn btn-primary">+ New entry</button>
+      </div>
+
+      <div class="journal-entry">
+        <div class="j-thumb"></div>
+        <div class="j-body">
+          <div class="j-head"><span class="j-plant">Monstera Deliciosa</span><span class="j-date">2026-09-03</span></div>
+          <p>New leaf unfurling near the top — first fenestration split visible. Moved it 30cm back from the window.</p>
+        </div>
+      </div>
+      <div class="journal-entry">
+        <div class="j-thumb"></div>
+        <div class="j-body">
+          <div class="j-head"><span class="j-plant">Snake Plant</span><span class="j-date">2026-08-29</span></div>
+          <p>Noticed slight yellowing on one lower leaf. Holding off watering for another week to check soil dryness.</p>
+        </div>
+      </div>
+      <div class="journal-entry">
+        <div class="j-thumb"></div>
+        <div class="j-body">
+          <div class="j-head"><span class="j-plant">Pothos</span><span class="j-date">2026-08-24</span></div>
+          <p>Trimmed two long vines and propagated cuttings in water. Placed on the kitchen windowsill.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== SETTINGS ===================== -->
+    <div class="page" id="page-settings">
+      <div class="topbar">
+        <div class="greet"><h2>Settings</h2><p>Manage your account and preferences</p></div>
+      </div>
+
+      <div class="settings-card">
+        <h4>Profile</h4>
+        <div class="field"><label>Name</label><input type="text" value="Riya Sharma"></div>
+        <div class="field"><label>Email</label><input type="text" value="riya@example.com"></div>
+        <div class="field"><label>Location</label><input type="text" value="Bālāchor, Punjab"></div>
+        <button class="btn btn-primary btn-sm">Save changes</button>
+      </div>
+
+      <div class="settings-card">
+        <h4>Notifications</h4>
+        <div class="toggle-row">
+          <div><div class="t-title">Watering reminders</div><div class="t-sub">Get notified when a plant needs water</div></div>
+          <div class="switch on"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="t-title">Weekly summary</div><div class="t-sub">A digest of your plants' health every Monday</div></div>
+          <div class="switch on"></div>
+        </div>
+        <div class="toggle-row">
+          <div><div class="t-title">Care tips</div><div class="t-sub">Occasional seasonal care suggestions</div></div>
+          <div class="switch"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.nav-item').forEach(item=>{
+    item.addEventListener('click', ()=> showPage(item.dataset.page));
+  });
+  document.querySelectorAll('.switch').forEach(sw=>{
+    sw.addEventListener('click', ()=> sw.classList.toggle('on'));
+  });
+  document.querySelectorAll('.filter-row').forEach(row=>{
+    row.querySelectorAll('.chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        row.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+      });
+    });
+  });
+  function showPage(name){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+name).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.page===name));
+  }
+</script>
+</body>
+</html>

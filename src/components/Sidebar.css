@@ -1,0 +1,50 @@
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: #1F3625;
+  color: #F1EFE6;
+  padding: 28px 20px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.logo {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  font-size: 22px;
+  margin-bottom: 34px;
+}
+
+.logo span {
+  color: #C9A227;
+}
+
+.nav-item {
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 3px;
+  margin-bottom: 4px;
+  color: #CFE0D2;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.15s;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-weight: 500;
+}
+
+.nav-icon {
+  font-size: 15px;
+  width: 18px;
+  text-align: center;
+}
