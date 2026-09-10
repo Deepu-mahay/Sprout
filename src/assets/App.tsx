@@ -1,20 +1,13 @@
-import './App.css'
-import Dashboard from './components/Dashboard.tsx'
-
-import MyPlants  from "./components/MyPlants.tsx"
-
-// inside the page-switch:
-
-// import Navbar from './components/Navbar'
-
 import { useState } from "react";
-import { Sidebar, type NavItem } from "./components/Sidebar.tsx";
-import SearchPlants from './components/SearchPlants.tsx'
-import CareSchedule from './components/CareSchedule.tsx';
-import Journal from './components/Journal.tsx';
-import Settings from './components/Settings.tsx';
-import PlantNews from './components/PlantNews.tsx';
-
+import { Sidebar } from "../components/Sidebar";
+import type { NavItem } from "../components/Sidebar";
+import Dashboard from "./Dashboard";
+import MyPlants from "./MyPlants";
+import SearchPlants from "./SearchPlants";
+import CareSchedule from "./CareSchedule";
+import Journal from "./Journal";
+import Settings from "./Settings";
+import PlantNews from "./PlantNews";
 
 const NAV_ITEMS: NavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: "⌂" },
@@ -22,8 +15,8 @@ const NAV_ITEMS: NavItem[] = [
   { id: "search", label: "Search Plants", icon: "⌕" },
   { id: "schedule", label: "Care Schedule", icon: "▤" },
   { id: "journal", label: "Journal", icon: "✎" },
-  { id: "settings", label: "Settings", icon: "⚙" },
   { id: "news", label: "Plant News", icon: "📰" },
+  { id: "settings", label: "Settings", icon: "⚙" },
 ];
 
 export default function App() {

@@ -1,3 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest: #1F3625;
+  --color-moss: #4C7A5D;
+  --color-moss-soft: #DDE7DE;
+  --color-ochre: #C9A227;
+  --color-ochre-soft: #F3E7C2;
+  --color-red-soft: #F6D9D9;
+  --color-parchment: #EFEAE0;
+  --color-panel: #FBF9F4;
+  --color-ink: #23291F;
+  --color-ink-faint: #6E7568;
+  --color-line: #D8D2C2;
+
+  --font-display: "Fraunces", serif;
+  --font-body: "Inter", sans-serif;
+}
 
  :root{
     --bg:#EFEAE0; --panel:#FBF9F4; --forest:#1F3625; --moss:#4C7A5D;
