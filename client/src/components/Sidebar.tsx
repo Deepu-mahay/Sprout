@@ -26,7 +26,7 @@ export function Sidebar({
   return (
     <nav
       className={`sidebar flex flex-col shrink-0 transition-all duration-200 ${
-        collapsed ? "w-16 px-2" : "w-56 px-5"
+        collapsed ? "w-14 px-2" : "w-56 px-5"
       }`}
       aria-label="Main navigation"
     >
@@ -41,14 +41,14 @@ export function Sidebar({
       </button>
 
       <div className={`logo flex items-center gap-2 mb-8 ${collapsed ? "justify-center px-0" : ""}`}>
-        <span>🌿</span>
+        <span >🌿</span>
         {!collapsed && <span>{appName}</span>}
       </div>
 
       {items.map((item) => (
         <div
           key={item.id}
-          className={`nav-item${item.id === activePage ? " active" : ""} ${
+          className= {`nav-item${item.id === activePage ? " active" : ""} ${
             collapsed ? "justify-center px-0" : ""
           }`}
           onClick={() => onNavigate(item.id)}
@@ -59,7 +59,7 @@ export function Sidebar({
             if (e.key === "Enter" || e.key === " ") onNavigate(item.id);
           }}
         >
-          <span className="nav-icon">{item.icon}</span>
+          <span className="nav-icon ">{item.icon}</span>
           {!collapsed && item.label}
         </div>
       ))}
