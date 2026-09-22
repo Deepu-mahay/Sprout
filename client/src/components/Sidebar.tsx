@@ -1,9 +1,11 @@
+import { Menu, type LucideIcon } from "lucide-react";
+import {  Leaf, X } from "lucide-react";
 import "./Sidebar.css";
 
 export interface NavItem {
   id: string;
   label: string;
-  icon: string; // emoji or icon char — swap for an icon component if you like
+  icon: LucideIcon; // emoji or icon char — swap for an icon component if you like
 }
 
 interface SidebarProps {
@@ -26,22 +28,22 @@ export function Sidebar({
   return (
     <nav
       className={`sidebar flex flex-col shrink-0 transition-all duration-200 ${
-        collapsed ? "w-14 px-2" : "w-56 px-5"
+        collapsed ? "w-14 px-2" : "w-40 px-5"
       }`}
       aria-label="Main navigation"
     >
       {/* toggle button — always visible, rail stays a fixed width either way */}
       <button
-        className="flex items-center justify-center w-8 h-8 mb-6 rounded text-[#CFE0D2] hover:bg-white/10 self-start"
+        className="flex items-center justify-center w-8 h-8 mb-6  rounded text-[#CFE0D2] hover:bg-white/10 self-start"
         onClick={onToggleCollapsed}
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
-        {collapsed ? "»" : "«"}
+        {collapsed ? <Menu size={20} /> : <X size={18} />}
       </button>
 
       <div className={`logo flex items-center gap-2 mb-8 ${collapsed ? "justify-center px-0" : ""}`}>
-        <span >🌿</span>
+        <Leaf size={30} className="text-[#28b959]" />
         {!collapsed && <span>{appName}</span>}
       </div>
 
@@ -59,7 +61,7 @@ export function Sidebar({
             if (e.key === "Enter" || e.key === " ") onNavigate(item.id);
           }}
         >
-          <span className="nav-icon ">{item.icon}</span>
+          <span className="nav-icon "><item.icon/></span>
           {!collapsed && item.label}
         </div>
       ))}

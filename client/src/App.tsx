@@ -2,6 +2,7 @@ import './App.css'
 import Dashboard from './components/Dashboard.tsx'
 
 import MyPlants  from "./components/MyPlants.tsx"
+import { Home, Sprout, Search, Calendar, NotebookPen, Settings as SettingsIcon, Newspaper } from "lucide-react";
 
 // inside the page-switch:
 
@@ -17,13 +18,13 @@ import PlantNews from './components/PlantNews.tsx';
 
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: "⌂" },
-  { id: "myplants", label: "My Plants", icon: "❖" },
-  { id: "search", label: "Search Plants", icon: "⌕" },
-  { id: "schedule", label: "Care Schedule", icon: "▤" },
-  { id: "journal", label: "Journal", icon: "✎" },
-  { id: "settings", label: "Settings", icon: "⚙" },
-  { id: "news", label: "Plant News", icon: "📰" },
+  { id: "dashboard", label: "Dashboard", icon: Home },
+  { id: "myplants", label: "My Plants", icon: Sprout },
+  { id: "search", label: "Search Plants", icon: Search },
+  { id: "schedule", label: "Care Schedule", icon: Calendar },
+  { id: "journal", label: "Journal", icon: NotebookPen },
+  { id: "settings", label: "Settings", icon: SettingsIcon },
+  { id: "news", label: "Plant News", icon: Newspaper },
 ];
 
 export default function App() {
