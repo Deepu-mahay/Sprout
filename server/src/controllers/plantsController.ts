@@ -10,8 +10,8 @@ export async function searchPlants(req: Request, res: Response) {
 
   try {
     // Swap this for a real call, e.g.:
-    // const response = await fetch(`https://some-plant-api.com/search?q=${query}&key=${PLANT_API_KEY}`);
-    // const data = await response.json();
+    const response = await fetch(`https://perenual.com/api/species-list?key=${process.env.PLANT_API_KEY}&q=${query}`);
+    const data = await response.json();
 
     // Placeholder response until you wire up a real provider:
     res.json({

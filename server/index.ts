@@ -7,7 +7,9 @@ import tasksRouter from "./src/routes/tasks";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: "http://localhost:5173" })); // your Vite client's dev URL
+app.use(cors({ 
+  origin: "http://localhost:5173" 
+ }));                                    // your Vite client's dev URL
 app.use(express.json());
 
 app.use("/api/plants", plantsRouter);
@@ -18,5 +20,8 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Sprout server running on http://localhost:${PORT}`);
+  console.log(`
+    Hello this Deepu YOur server is running now 
+    So do what you want to do !@!!!!!
+    Sprout server running on http://localhost:${PORT}`);
 });

@@ -1,20 +1,19 @@
-// Goes in your React project at: src/api/client.ts
-// Base URL comes from a Vite env var (must be prefixed VITE_ to be exposed to the browser)
-// Add to client/.env.local: VITE_API_URL=http://localhost:3001
+import  axios from "axios";
+ 
+const api = axios.create({
+  baseURL: import.meta.env.PLANT_API_URL,
+  headers:{
+    "Content-Type": "application/json",
+    "X-API-Key": import.meta.env.PLANT_API_KEY,
+  },
+});
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
-  if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`);
-  return res.json();
-}
-
-export const api = {
-  searchPlants: (query: string) => request<{ results: unknown[] }>(`/api/plants?query=${encodeURIComponent(query)}`),
-  getTasks: () => request<unknown[]>("/api/tasks"),
-  addTask: (task: unknown) => request<unknown>("/api/tasks", { method: "POST", body: JSON.stringify(task) }),
-};
+export const getPlants = async () =>{
+  try {
+  const response = await api.get("/species-list");
+  console.log(response.data)
+  return response.data;
+} catch(error) {
+  console.error("Error fetching plants:", error);
+  throw error;
+}}
