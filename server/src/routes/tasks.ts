@@ -7,6 +7,7 @@ let tasks = [
   { id: "t1", plantName: "Peace Lily", type: "water", day: "Mon" },
   { id: "t2", plantName: "Fiddle Leaf Fig", type: "feed", day: "Tue" },
 ];
+console.log(tasks)
 
 router.get("/", (_req, res) => {
   res.json(tasks);

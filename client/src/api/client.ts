@@ -16,4 +16,5 @@ export const getPlants = async () =>{
 } catch(error) {
   console.error("Error fetching plants:", error);
   throw error;
-}}
+}
+}
